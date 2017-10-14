@@ -1,0 +1,20 @@
+# files for git ignore
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# virtualenv files
+*env*
+
+# idea folder
+.idea
+
+# credentials files
+credentials.txt
+
+# package files
+*.egg-info
+.eggs/
+dist/
+build/
