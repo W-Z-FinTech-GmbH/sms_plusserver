@@ -49,6 +49,8 @@ configure(
     # Optional parameters:
     project='MyAppNotifications',  # Name of your app / project
     orig='MyApp',  # SMS origin (name or phone number)
+    encoding='utf-8',  # Set default text encoding
+    max_parts=3,  # Send multiple messages when text exceeds 160 character limit
     timeout=60  # Default timeout for service API calls
 )
 ```
