@@ -122,7 +122,7 @@ class SMSService(object):
 
     def __init__(
         self, put_url=None, sms_state_url=None, project=None,
-        username=None, password=None, orig=None, timeout=None
+        username=None, password=None, orig=None, encoding=None, timeout=None
     ):
         """Initializes SMSService object
 
@@ -132,6 +132,9 @@ class SMSService(object):
         :param username: user name for access to Plusserver platform - REQUIRED
         :param password: password for access to Plusserver platform - REQUIRED
         :param orig: SMS sender ID (optional)
+        :param encoding: SMS text encoding,
+            choices: 'iso', 'gsm', 'utf-8', 'ucs2'
+            (optional, implicit default - 'iso')
         :param timeout: network timeout in seconds (optional)
         """
         self.put_url = put_url or self.SMS_PUT_URL
@@ -140,6 +143,7 @@ class SMSService(object):
         self.username = username
         self.password = password
         self.orig = orig
+        self.encoding = encoding
         self.timeout = timeout
 
     def __repr__(self):
@@ -189,6 +193,7 @@ class SMSService(object):
                 registered_delivery=sms.registered_delivery,
                 debug=sms.debug,
                 project=sms.project,
+                encoding=sms.encoding,
                 timeout=timeout,
                 fail_silently=fail_silently
             )
@@ -239,7 +244,8 @@ class SMSService(object):
 
     def put_sms(
         self, destination, text, orig=None, registered_delivery=True,
-        debug=False, project=None, timeout=None, fail_silently=False
+        debug=False, project=None, encoding=None, timeout=None,
+        fail_silently=False
     ):
         """Sends SMS via Plusserver SMS platform.
 
@@ -251,6 +257,9 @@ class SMSService(object):
         :param debug: simulate SMS sending
         :param project: a category, to be displayed in message logs on
             Plusserver platform
+        :param encoding: SMS text encoding,
+            choices: 'iso', 'gsm', 'utf-8', 'ucs2'
+            (optional, implicit default - 'iso')
         :param timeout: network timeout in seconds
         :param fail_silently: do not raise exceptions
 
@@ -276,6 +285,9 @@ class SMSService(object):
         orig = orig or self.orig
         if orig:
             data['orig'] = orig
+        encoding = encoding or self.encoding
+        if encoding:
+            data['enc'] = encoding
 
         if timeout is None:
             timeout = self.timeout
@@ -430,7 +442,7 @@ class SMS(object):
 
     def __init__(
         self, destination, text, orig=None, registered_delivery=True,
-        debug=False, project=None
+        debug=False, project=None, encoding=None
     ):
         """Initializes SMS object - a single message
 
@@ -442,6 +454,9 @@ class SMS(object):
         :param debug: simulate SMS sending
         :param project: a category, to be displayed in message logs on
             Plusserver platform
+        :param encoding: SMS text encoding,
+            choices: 'iso', 'gsm', 'utf-8', 'ucs2'
+            (optional, implicit default - 'iso')
         """
         self.destination = destination
         self.text = text
@@ -449,6 +464,7 @@ class SMS(object):
         self.registered_delivery = registered_delivery
         self.debug = debug
         self.project = project
+        self.encoding = encoding
         self.put_response = None
         self.state_response = None
 
@@ -518,7 +534,8 @@ class SMS(object):
 
 def send_sms(
     destination, text, orig=None, registered_delivery=True,
-    debug=False, project=None, timeout=None, fail_silently=False, service=None
+    debug=False, project=None, encoding=None, timeout=None,
+    fail_silently=False, service=None
 ):
     """Shortcut to send a SMS.
 
@@ -530,6 +547,9 @@ def send_sms(
     :param debug: simulate SMS sending
     :param project: a category, to be displayed in message logs on Plusserver
         platform
+    :param encoding: SMS text encoding,
+        choices: 'iso', 'gsm', 'utf-8', 'ucs2'
+        (optional, implicit default - 'iso')
     :param timeout: network timeout in seconds
     :param fail_silently: do not raise exceptions
     :param service: a SMSService instance
@@ -543,14 +563,16 @@ def send_sms(
     """
     sms = SMS(
         destination=destination, text=text, orig=orig,
-        registered_delivery=registered_delivery, debug=debug, project=project
+        registered_delivery=registered_delivery, debug=debug, project=project,
+        encoding=encoding
     )
     return sms.send(
         timeout=timeout, fail_silently=fail_silently, service=service
     )
 
 
-def check_sms_state(handle_id, timeout=None, fail_silently=False, service=None):
+def check_sms_state(handle_id, timeout=None, fail_silently=False,
+                    service=None):
     """Shortcut to check state of a SMS.
 
     :param handle_id: SMS unique identifier on Plusserver platform
