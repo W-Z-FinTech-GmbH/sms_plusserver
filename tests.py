@@ -150,6 +150,7 @@ class SMSServiceTestCase(unittest.TestCase):
         self.assertIsNone(sms_plusserver.default_service.password)
         self.assertIsNone(sms_plusserver.default_service.orig)
         self.assertIsNone(sms_plusserver.default_service.encoding)
+        self.assertIsNone(sms_plusserver.default_service.max_parts)
         self.assertIsNone(sms_plusserver.default_service.timeout)
 
     def test_init_default_attributes(self):
@@ -176,6 +177,9 @@ class SMSServiceTestCase(unittest.TestCase):
             service.encoding, sms_plusserver.default_service.encoding
         )
         self.assertEqual(
+            service.max_parts, sms_plusserver.default_service.max_parts
+        )
+        self.assertEqual(
             service.timeout, sms_plusserver.default_service.timeout
         )
 
@@ -187,6 +191,7 @@ class SMSServiceTestCase(unittest.TestCase):
         custom_password = 'admin.1'
         custom_orig = 'TEST'
         custom_encoding = 'utf-8'
+        custom_max_parts = 3
         custom_timeout = 30
 
         service = sms_plusserver.SMSService(
@@ -197,6 +202,7 @@ class SMSServiceTestCase(unittest.TestCase):
             password=custom_password,
             orig=custom_orig,
             encoding=custom_encoding,
+            max_parts=custom_max_parts,
             timeout=custom_timeout
         )
 
@@ -207,6 +213,7 @@ class SMSServiceTestCase(unittest.TestCase):
         self.assertEqual(service.password, custom_password)
         self.assertEqual(service.orig, custom_orig)
         self.assertEqual(service.encoding, custom_encoding)
+        self.assertEqual(service.max_parts, custom_max_parts)
         self.assertEqual(service.timeout, custom_timeout)
 
     def test_configure(self):
@@ -217,6 +224,7 @@ class SMSServiceTestCase(unittest.TestCase):
         custom_password = 'admin.1'
         custom_orig = 'TEST'
         custom_encoding = 'utf-8'
+        custom_max_parts = 3
         custom_timeout = 30
 
         service = sms_plusserver.SMSService()
@@ -228,6 +236,7 @@ class SMSServiceTestCase(unittest.TestCase):
             password=custom_password,
             orig=custom_orig,
             encoding=custom_encoding,
+            max_parts=custom_max_parts,
             timeout=custom_timeout
         )
 
@@ -238,6 +247,7 @@ class SMSServiceTestCase(unittest.TestCase):
         self.assertEqual(service.password, custom_password)
         self.assertEqual(service.orig, custom_orig)
         self.assertEqual(service.encoding, custom_encoding)
+        self.assertEqual(service.max_parts, custom_max_parts)
         self.assertEqual(service.timeout, custom_timeout)
 
     # Tests for `put_sms` method:
@@ -286,7 +296,8 @@ class SMSServiceTestCase(unittest.TestCase):
 
         response = service.put_sms(
             '+4911122233344', 'Hello!', orig='TEST', registered_delivery=False,
-            debug=True, project='PROJECT2', encoding='utf-8', timeout=30
+            debug=True, project='PROJECT2', encoding='utf-8', max_parts=3,
+            timeout=30
         )
 
         mock_post.assert_called_once_with(
@@ -299,6 +310,7 @@ class SMSServiceTestCase(unittest.TestCase):
                 'registered_delivery': '0',
                 'orig': 'TEST',
                 'enc': 'utf-8',
+                'maxparts': '3',
             },
             auth=('user', 'pass'),
             timeout=30
@@ -618,6 +630,7 @@ class SMSServiceTestCase(unittest.TestCase):
             debug=False,
             project=None,
             encoding=None,
+            max_parts=None,
             timeout=None,
             fail_silently=False
         )
@@ -632,7 +645,7 @@ class SMSServiceTestCase(unittest.TestCase):
         service = sms_plusserver.SMSService()
         sms = sms_plusserver.SMS(
             '+4911122233344', 'Hello!', orig='TEST', registered_delivery=False,
-            debug=True, project='PROJECT2', encoding='utf-8'
+            debug=True, project='PROJECT2', encoding='utf-8', max_parts=3
         )
 
         success = service.send(sms, timeout=30, fail_silently=True)
@@ -645,6 +658,7 @@ class SMSServiceTestCase(unittest.TestCase):
             debug=True,
             project='PROJECT2',
             encoding='utf-8',
+            max_parts=3,
             timeout=30,
             fail_silently=True
         )
@@ -670,6 +684,7 @@ class SMSServiceTestCase(unittest.TestCase):
             debug=False,
             project=None,
             encoding=None,
+            max_parts=None,
             timeout=None,
             fail_silently=False
         )
@@ -757,6 +772,7 @@ class SMSTestCase(unittest.TestCase):
         self.assertFalse(sms.debug)
         self.assertIsNone(sms.project)
         self.assertIsNone(sms.encoding)
+        self.assertIsNone(sms.max_parts)
 
     def test_init_custom_attributes(self):
         destination = '+4911122233344'
@@ -766,12 +782,13 @@ class SMSTestCase(unittest.TestCase):
         custom_debug = True
         custom_project = 'TestProject'
         custom_encoding = 'utf-8'
+        custom_max_parts = 3
 
         sms = sms_plusserver.SMS(
             destination, text,
             orig=custom_orig, registered_delivery=custom_registered_delivery,
             debug=custom_debug, project=custom_project,
-            encoding=custom_encoding
+            encoding=custom_encoding, max_parts=custom_max_parts
         )
 
         self.assertEqual(sms.destination, destination)
@@ -781,6 +798,7 @@ class SMSTestCase(unittest.TestCase):
         self.assertEqual(sms.debug, custom_debug)
         self.assertEqual(sms.project, custom_project)
         self.assertEqual(sms.encoding, custom_encoding)
+        self.assertEqual(sms.max_parts, custom_max_parts)
 
     def test_repr(self):
         sms = sms_plusserver.SMS('+4911122233344', 'Hello!')
@@ -927,6 +945,7 @@ class FunctionsTestCase(unittest.TestCase):
             debug=False,
             project=None,
             encoding=None,
+            max_parts=None,
             timeout=None,
             fail_silently=False
         )
@@ -939,8 +958,8 @@ class FunctionsTestCase(unittest.TestCase):
     def test_send_sms_custom_params(self, mock_put_sms):
         success = sms_plusserver.send_sms(
             '+4911122233344', 'Hello!', orig='TEST', registered_delivery=False,
-            debug=True, project='PROJECT2', encoding='utf-8', timeout=30,
-            fail_silently=True
+            debug=True, project='PROJECT2', encoding='utf-8', max_parts=3,
+            timeout=30, fail_silently=True
         )
 
         mock_put_sms.assert_called_once_with(
@@ -951,6 +970,7 @@ class FunctionsTestCase(unittest.TestCase):
             debug=True,
             project='PROJECT2',
             encoding='utf-8',
+            max_parts=3,
             timeout=30,
             fail_silently=True
         )
