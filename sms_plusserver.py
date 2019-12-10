@@ -116,8 +116,8 @@ class SMSResponse(object):
 class SMSService(object):
     """Main object - provider's API client"""
 
-    SMS_PUT_URL = 'https://sms.openit.de/put.php'
-    SMS_STATE_URL = 'https://sms.openit.de/sms-state.php'
+    SMS_PUT_URL = 'https://sms.plusserver.com/put.php'
+    SMS_STATE_URL = 'https://sms.plusserver.com/sms-state.php'
     CHECK_STATE_WAIT_BETWEEN_CALLS = 0.5
 
     def __init__(

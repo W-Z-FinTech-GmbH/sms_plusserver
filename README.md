@@ -16,7 +16,7 @@ Usage
 -----
 
 In order to use this library users need to have an account on
-Plusserver SMS platform (https://sms.openit.de/).
+Plusserver SMS platform (https://sms.plusserver.com/).
 
 #### Quick start
 
