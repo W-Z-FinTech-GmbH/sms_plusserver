@@ -18,6 +18,7 @@ setup(
         'platform.'
     ),
     long_description=long_description,
+    long_description_content_type='text/markdown',
     url='https://github.com/W-Z-FinTech-GmbH/sms_plusserver',
     author='W&Z FinTech GmbH',
     author_email='dk@ownly.de',
