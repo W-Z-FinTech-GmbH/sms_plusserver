@@ -18,3 +18,7 @@ credentials.txt
 .eggs/
 dist/
 build/
+
+# DEV configs
+.flake8
+pyproject.toml

@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import unicode_literals
-
 import collections
 import datetime
 import logging
+from typing import Optional, Any, Union
+
 import requests
-import six
 import time
 
 
@@ -27,16 +24,19 @@ MESSAGE_ERROR = 'ERROR'
 class SMSServiceError(Exception):
     """Base exception class"""
 
-    def __init__(self, message=None, original_exception=None):
-        message = message or six.text_type(original_exception)
-        super(SMSServiceError, self).__init__(message)
+    def __init__(
+        self,
+        message: Optional[str] = None,
+        original_exception: Optional[str] = None,
+    ):
+        message = message or str(original_exception)
+        super().__init__(message)
         self.original_exception = original_exception
 
     def is_timeout(self):
         """Is this error caused by timeout?"""
-        return (
-            self.original_exception and
-            isinstance(self.original_exception, requests.Timeout)
+        return self.original_exception and isinstance(
+            self.original_exception, requests.Timeout
         )
 
 
@@ -59,7 +59,7 @@ class RequestError(SMSServiceError):
 class SMSResponse(object):
     """Wrapper over SMSService response data, providing dict-like access"""
 
-    def __init__(self, response_text):
+    def __init__(self, response_text: str):
         lines = response_text.splitlines()
         self.message = lines.pop(0) if lines else ''
         self._data = collections.OrderedDict()
@@ -71,7 +71,7 @@ class SMSResponse(object):
     def __repr__(self):
         return '<{} [{}]>'.format(self.__class__.__name__, self.message or '')
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: Any):
         return self._data[item]
 
     def __iter__(self):
@@ -80,7 +80,7 @@ class SMSResponse(object):
     def items(self):
         return self._data.items()
 
-    def get(self, key, default=None):
+    def get(self, key: Any, default: Optional[Any] = None):
         try:
             value = self[key]
         except KeyError:
@@ -121,9 +121,16 @@ class SMSService(object):
     CHECK_STATE_WAIT_BETWEEN_CALLS = 0.5
 
     def __init__(
-        self, put_url=None, sms_state_url=None, project=None,
-        username=None, password=None, orig=None, encoding=None,
-        max_parts=None, timeout=None
+        self,
+        put_url: Optional[str] = None,
+        sms_state_url: Optional[str] = None,
+        project: Optional[str] = None,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        orig: Optional[str] = None,
+        encoding: Optional[str] = None,
+        max_parts: Optional[int] = None,
+        timeout: Optional[float] = None,
     ):
         """Initializes SMSService object
 
@@ -155,7 +162,7 @@ class SMSService(object):
         return '<{} {}{}>'.format(
             self.__class__.__name__,
             self.username,
-            ' @ {}'.format(self.project) if self.project else ''
+            ' @ {}'.format(self.project) if self.project else '',
         )
 
     def configure(self, **kwargs):
@@ -175,7 +182,12 @@ class SMSService(object):
 
     # High-level API:
 
-    def send(self, sms, timeout=None, fail_silently=False):
+    def send(
+        self,
+        sms: 'SMS',
+        timeout: Optional[float] = None,
+        fail_silently: Optional[bool] = False,
+    ) -> Union[str, bool]:
         """Sends SMS via Plusserver SMS platform by calling `put_sms`.
         Populates `SMS.put_response` attribute.
 
@@ -201,7 +213,7 @@ class SMSService(object):
                 encoding=sms.encoding,
                 max_parts=sms.max_parts,
                 timeout=timeout,
-                fail_silently=fail_silently
+                fail_silently=fail_silently,
             )
         except Exception:
             sms.put_response = None
@@ -214,13 +226,19 @@ class SMSService(object):
             result = bool(put_response and put_response.is_ok)
         return result
 
-    def check_state(self, sms, wait=False, timeout=None, fail_silently=False):
+    def check_state(
+        self,
+        sms: 'SMS',
+        wait: Optional[bool] = False,
+        timeout: Optional[float] = None,
+        fail_silently: Optional[bool] = False,
+    ) -> Optional[str]:
         """Checks state of given SMS on Plusserver SMS platform by calling
         `check_sms_status`.
         Populates `SMS.state_response` attribute.
 
         :param sms: a SMS instance
-        :param wait: should we wait for SMS to get "arrived" state?
+        :param wait: should we wait for SMS to get 'arrived' state?
         :param timeout: network timeout in seconds
         :param fail_silently: do not raise exceptions
 
@@ -237,7 +255,7 @@ class SMSService(object):
             state_response = method(
                 handle_id=sms.handle_id,
                 timeout=timeout,
-                fail_silently=fail_silently
+                fail_silently=fail_silently,
             )
         except Exception:
             sms.state_response = None
@@ -249,10 +267,18 @@ class SMSService(object):
     # Low-level API:
 
     def put_sms(
-        self, destination, text, orig=None, registered_delivery=True,
-        debug=False, project=None, encoding=None, max_parts=None, timeout=None,
-        fail_silently=False
-    ):
+        self,
+        destination: str,
+        text: str,
+        orig: Optional[str] = None,
+        registered_delivery: Optional[bool] = True,
+        debug: Optional[bool] = False,
+        project: Optional[str] = None,
+        encoding: Optional[str] = None,
+        max_parts: Optional[int] = None,
+        timeout: Optional[float] = None,
+        fail_silently: Optional[bool] = False,
+    ) -> Optional[SMSResponse]:
         """Sends SMS via Plusserver SMS platform.
 
         :param destination: recipient ID (phone number)
@@ -280,16 +306,16 @@ class SMSService(object):
         :return a SMSResponse object or None
         """
         if not (self.username and self.password):
-            raise ConfigurationError("Service credentials not defined")
+            raise ConfigurationError('Service credentials not defined')
 
         auth = (self.username, self.password)
 
         data = {
             'dest': destination,
             'data': text,
-            'debug': six.text_type(int(debug)),
+            'debug': str(int(debug)),
             'project': project or self.project,
-            'registered_delivery': six.text_type(int(registered_delivery)),
+            'registered_delivery': str(int(registered_delivery)),
         }
         orig = orig or self.orig
         if orig:
@@ -299,17 +325,26 @@ class SMSService(object):
             data['enc'] = encoding
         max_parts = max_parts or self.max_parts
         if max_parts:
-            data['maxparts'] = six.text_type(max_parts)
+            data['maxparts'] = str(max_parts)
 
         if timeout is None:
             timeout = self.timeout
 
         return self._request(
-            url=self.put_url, data=data, auth=auth, timeout=timeout,
-            resource_name='Put SMS', fail_silently=fail_silently
+            url=self.put_url,
+            data=data,
+            auth=auth,
+            timeout=timeout,
+            resource_name='Put SMS',
+            fail_silently=fail_silently,
         )
 
-    def check_sms_state(self, handle_id, timeout=None, fail_silently=False):
+    def check_sms_state(
+        self,
+        handle_id: str,
+        timeout: Optional[float] = None,
+        fail_silently: Optional[bool] = False,
+    ) -> Optional[SMSResponse]:
         """Checks state of given SMS (Handle ID) on Plusserver SMS platform.
 
         :param handle_id: SMS unique identifier on Plusserver platform
@@ -325,9 +360,9 @@ class SMSService(object):
         :return a SMSResponse object or None
         """
         if not (self.username and self.password):
-            raise ConfigurationError("Service credentials not defined")
+            raise ConfigurationError('Service credentials not defined')
         if not handle_id:
-            raise ValidationError("Unable to check state of unsent SMS")
+            raise ValidationError('Unable to check state of unsent SMS')
 
         auth = (self.username, self.password)
 
@@ -339,12 +374,21 @@ class SMSService(object):
             timeout = self.timeout
 
         return self._request(
-            url=self.sms_state_url, data=data, auth=auth, timeout=timeout,
-            resource_name='Check SMS state', fail_silently=fail_silently
+            url=self.sms_state_url,
+            data=data,
+            auth=auth,
+            timeout=timeout,
+            resource_name='Check SMS state',
+            fail_silently=fail_silently,
         )
 
-    def wait_until_arrived(self, handle_id, timeout=None, fail_silently=False):
-        """Waits until SMS (Handle ID) gets "arrived" state on Plusserver SMS
+    def wait_until_arrived(
+        self,
+        handle_id: str,
+        timeout: Optional[float] = None,
+        fail_silently: Optional[bool] = False,
+    ) -> Optional[SMSResponse]:
+        """Waits until SMS (Handle ID) gets 'arrived' state on Plusserver SMS
         platform.
 
         :param handle_id: SMS unique identifier on Plusserver platform
@@ -366,8 +410,7 @@ class SMSService(object):
             step_start = datetime.datetime.now()
             try:
                 state_response = self.check_sms_state(
-                    handle_id, timeout=remaining_timeout,
-                    fail_silently=False
+                    handle_id, timeout=remaining_timeout, fail_silently=False
                 )
             except SMSServiceError as error:
                 if not error.is_timeout() and not fail_silently:
@@ -397,7 +440,14 @@ class SMSService(object):
         return state_response
 
     @staticmethod
-    def _request(url, data, auth, timeout, resource_name, fail_silently):
+    def _request(
+        url: str,
+        data: dict,
+        auth: dict,
+        timeout: float,
+        resource_name: str,
+        fail_silently: bool,
+    ) -> Optional[SMSResponse]:
         """Sends a request to Service API, construct SMSResponse object from
         response.
 
@@ -453,8 +503,15 @@ class SMS(object):
     """Single message wrapper"""
 
     def __init__(
-        self, destination, text, orig=None, registered_delivery=True,
-        debug=False, project=None, encoding=None, max_parts=None
+        self,
+        destination: str,
+        text: str,
+        orig: Optional[str] = None,
+        registered_delivery: Optional[bool] = True,
+        debug: Optional[bool] = False,
+        project: Optional[str] = None,
+        encoding: Optional[str] = None,
+        max_parts: Optional[int] = None,
     ):
         """Initializes SMS object - a single message
 
@@ -491,10 +548,15 @@ class SMS(object):
             self.__class__.__name__,
             self.destination,
             ' [{}]'.format(handle_id) if handle_id else '',
-            ' {}'.format(state) if state else ''
+            ' {}'.format(state) if state else '',
         )
 
-    def send(self, timeout=None, fail_silently=False, service=None):
+    def send(
+        self,
+        timeout: Optional[float] = None,
+        fail_silently: Optional[bool] = False,
+        service: Optional[SMSService] = None,
+    ) -> Union[str, bool]:
         """Sends this SMS.
 
         :param timeout: network timeout in seconds
@@ -512,11 +574,15 @@ class SMS(object):
         return service.send(self, timeout=timeout, fail_silently=fail_silently)
 
     def check_state(
-        self, wait=False, timeout=None, fail_silently=False, service=None
-    ):
+        self,
+        wait: Optional[bool] = False,
+        timeout: Optional[float] = None,
+        fail_silently: Optional[bool] = False,
+        service: Optional[SMSService] = None,
+    ) -> Optional[str]:
         """Checks state of this SMS.
 
-        :param wait: perform subsequent checks until "arrived" state received
+        :param wait: perform subsequent checks until 'arrived' state received
         :param timeout: network timeout in seconds
         :param fail_silently: do not raise exceptions
         :param service: a SMSService instance
@@ -535,12 +601,12 @@ class SMS(object):
         )
 
     @property
-    def handle_id(self):
+    def handle_id(self) -> Optional[str]:
         """SMS unique handle ID"""
         return self.put_response.handle_id if self.put_response else None
 
     @property
-    def state(self):
+    def state(self) -> Optional[str]:
         """Current state of sent SMS"""
         response = self.state_response or self.put_response
         return response.state if response else None
@@ -548,11 +614,20 @@ class SMS(object):
 
 # Shortcut functions, bypassing OOP API:
 
+
 def send_sms(
-    destination, text, orig=None, registered_delivery=True,
-    debug=False, project=None, encoding=None, max_parts=None, timeout=None,
-    fail_silently=False, service=None
-):
+    destination: str,
+    text: str,
+    orig: Optional[str] = None,
+    registered_delivery: Optional[bool] = True,
+    debug: Optional[bool] = False,
+    project: Optional[str] = None,
+    encoding: Optional[str] = None,
+    max_parts: Optional[int] = None,
+    timeout: Optional[float] = None,
+    fail_silently: Optional[bool] = False,
+    service: Optional[SMSService] = None,
+) -> Union[str, bool]:
     """Shortcut to send a SMS.
 
     :param destination: recipient ID (phone number)
@@ -581,17 +656,26 @@ def send_sms(
     :return handle_id if available, boolean success indicator otherwise
     """
     sms = SMS(
-        destination=destination, text=text, orig=orig,
-        registered_delivery=registered_delivery, debug=debug, project=project,
-        encoding=encoding, max_parts=max_parts
+        destination=destination,
+        text=text,
+        orig=orig,
+        registered_delivery=registered_delivery,
+        debug=debug,
+        project=project,
+        encoding=encoding,
+        max_parts=max_parts,
     )
     return sms.send(
         timeout=timeout, fail_silently=fail_silently, service=service
     )
 
 
-def check_sms_state(handle_id, timeout=None, fail_silently=False,
-                    service=None):
+def check_sms_state(
+    handle_id: str,
+    timeout: Optional[float] = None,
+    fail_silently: Optional[bool] = False,
+    service: Optional[SMSService] = None,
+) -> Optional[str]:
     """Shortcut to check state of a SMS.
 
     :param handle_id: SMS unique identifier on Plusserver platform
@@ -615,9 +699,12 @@ def check_sms_state(handle_id, timeout=None, fail_silently=False,
 
 
 def wait_until_arrived(
-    handle_id, timeout=None, fail_silently=False, service=None
-):
-    """Waits until SMS gets "arrived" status.
+    handle_id: str,
+    timeout: Optional[float] = None,
+    fail_silently: Optional[bool] = False,
+    service: Optional[SMSService] = None,
+) -> Optional[str]:
+    """Waits until SMS gets 'arrived' status.
 
     :param handle_id: SMS unique identifier on Plusserver platform
     :param timeout: network timeout in seconds

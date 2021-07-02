@@ -39,8 +39,7 @@ setup(
     keywords='sms plusserver message text phone',
     py_modules=['sms_plusserver'],
     install_requires=[
-        'requests >= 2.1',
-        'six',
+        'requests >= 2.25',
     ],
     test_suite='tests',
     tests_require=[
