@@ -453,7 +453,7 @@ class SMSServiceTestCase(unittest.TestCase):
 
         mock_post.assert_called_once_with(
             sms_plusserver.SMSService.SMS_STATE_URL,
-            {'handle': 'd41d8cd98f00b204e9800998ecf8427e',},
+            {'handle': 'd41d8cd98f00b204e9800998ecf8427e'},
             auth=('user', 'pass'),
             timeout=None,
         )
@@ -476,7 +476,7 @@ class SMSServiceTestCase(unittest.TestCase):
 
         mock_post.assert_called_once_with(
             sms_plusserver.SMSService.SMS_STATE_URL,
-            {'handle': 'd41d8cd98f00b204e9800998ecf8427e',},
+            {'handle': 'd41d8cd98f00b204e9800998ecf8427e'},
             auth=('user', 'pass'),
             timeout=30,
         )
@@ -516,7 +516,7 @@ class SMSServiceTestCase(unittest.TestCase):
 
         mock_post.assert_called_once_with(
             sms_plusserver.SMSService.SMS_STATE_URL,
-            {'handle': 'unknownhandle',},
+            {'handle': 'unknownhandle'},
             auth=('user', 'pass'),
             timeout=None,
         )
@@ -535,7 +535,7 @@ class SMSServiceTestCase(unittest.TestCase):
 
         mock_post.assert_called_once_with(
             sms_plusserver.SMSService.SMS_STATE_URL,
-            {'handle': 'd41d8cd98f00b204e9800998ecf8427e',},
+            {'handle': 'd41d8cd98f00b204e9800998ecf8427e'},
             auth=('user', 'pass'),
             timeout=None,
         )
@@ -560,7 +560,7 @@ class SMSServiceTestCase(unittest.TestCase):
 
         mock_post.assert_called_once_with(
             sms_plusserver.SMSService.SMS_STATE_URL,
-            {'handle': 'd41d8cd98f00b204e9800998ecf8427e',},
+            {'handle': 'd41d8cd98f00b204e9800998ecf8427e'},
             auth=('user', 'pass'),
             timeout=None,
         )
@@ -585,7 +585,7 @@ class SMSServiceTestCase(unittest.TestCase):
 
         mock_post.assert_called_once_with(
             sms_plusserver.SMSService.SMS_STATE_URL,
-            {'handle': 'd41d8cd98f00b204e9800998ecf8427e',},
+            {'handle': 'd41d8cd98f00b204e9800998ecf8427e'},
             auth=('user', 'pass'),
             timeout=None,
         )
@@ -796,21 +796,18 @@ class SMSTestCase(unittest.TestCase):
     def test_repr(self):
         sms = sms_plusserver.SMS('+4911122233344', 'Hello!')
         self.assertEqual(repr(sms), '<SMS +4911122233344>')
+        handle_id = 'd41d8cd98f00b204e9800998ecf8427e'
 
         sms.put_response = sms_plusserver.SMSResponse(
-            'REQUEST OK\nhandle = d41d8cd98f00b204e9800998ecf8427e'
+            f'REQUEST OK\nhandle = {handle_id}'
         )
-        self.assertEqual(
-            repr(sms),
-            '<SMS +4911122233344 [d41d8cd98f00b204e9800998ecf8427e]>',
-        )
+        self.assertEqual(repr(sms), f'<SMS +4911122233344 [{handle_id}]>')
 
         sms.state_response = sms_plusserver.SMSResponse(
             'REQUEST OK\nstate = processed'
         )
         self.assertEqual(
-            repr(sms),
-            '<SMS +4911122233344 [d41d8cd98f00b204e9800998ecf8427e] processed>',
+            repr(sms), f'<SMS +4911122233344 [{handle_id}] processed>'
         )
 
     # Tests for `send` method:

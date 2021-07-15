@@ -363,9 +363,7 @@ class SMSService(object):
 
         auth = (self.username, self.password)
 
-        data = {
-            'handle': handle_id,
-        }
+        data = {'handle': handle_id}
 
         if timeout is None:
             timeout = self.timeout
