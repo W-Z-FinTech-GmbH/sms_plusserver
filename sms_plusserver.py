@@ -1,7 +1,7 @@
 import collections
 import datetime
 import logging
-from typing import Optional, Any, Union
+from typing import Optional, Union
 
 import requests
 import time
@@ -71,7 +71,7 @@ class SMSResponse(object):
     def __repr__(self):
         return f'<{self.__class__.__name__} [{self.message or ""}]>'
 
-    def __getitem__(self, item: Any):
+    def __getitem__(self, item):
         return self._data[item]
 
     def __iter__(self):
@@ -80,7 +80,7 @@ class SMSResponse(object):
     def items(self):
         return self._data.items()
 
-    def get(self, key: Any, default: Optional[Any] = None):
+    def get(self, key, default=None):
         try:
             value = self[key]
         except KeyError:
