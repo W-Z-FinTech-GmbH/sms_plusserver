@@ -186,7 +186,7 @@ class SMSService(object):
         self,
         sms: 'SMS',
         timeout: Optional[float] = None,
-        fail_silently: Optional[bool] = False,
+        fail_silently: bool = False,
     ) -> Union[str, bool]:
         """Sends SMS via Plusserver SMS platform by calling `put_sms`.
         Populates `SMS.put_response` attribute.
@@ -229,9 +229,9 @@ class SMSService(object):
     def check_state(
         self,
         sms: 'SMS',
-        wait: Optional[bool] = False,
+        wait: bool = False,
         timeout: Optional[float] = None,
-        fail_silently: Optional[bool] = False,
+        fail_silently: bool = False,
     ) -> Optional[str]:
         """Checks state of given SMS on Plusserver SMS platform by calling
         `check_sms_status`.
@@ -271,13 +271,13 @@ class SMSService(object):
         destination: str,
         text: str,
         orig: Optional[str] = None,
-        registered_delivery: Optional[bool] = True,
-        debug: Optional[bool] = False,
+        registered_delivery: bool = True,
+        debug: bool = False,
         project: Optional[str] = None,
         encoding: Optional[str] = None,
         max_parts: Optional[int] = None,
         timeout: Optional[float] = None,
-        fail_silently: Optional[bool] = False,
+        fail_silently: bool = False,
     ) -> Optional[SMSResponse]:
         """Sends SMS via Plusserver SMS platform.
 
@@ -343,7 +343,7 @@ class SMSService(object):
         self,
         handle_id: str,
         timeout: Optional[float] = None,
-        fail_silently: Optional[bool] = False,
+        fail_silently: bool = False,
     ) -> Optional[SMSResponse]:
         """Checks state of given SMS (Handle ID) on Plusserver SMS platform.
 
@@ -386,7 +386,7 @@ class SMSService(object):
         self,
         handle_id: str,
         timeout: Optional[float] = None,
-        fail_silently: Optional[bool] = False,
+        fail_silently: bool = False,
     ) -> Optional[SMSResponse]:
         """Waits until SMS (Handle ID) gets 'arrived' state on Plusserver SMS
         platform.
@@ -507,8 +507,8 @@ class SMS(object):
         destination: str,
         text: str,
         orig: Optional[str] = None,
-        registered_delivery: Optional[bool] = True,
-        debug: Optional[bool] = False,
+        registered_delivery: bool = True,
+        debug: bool = False,
         project: Optional[str] = None,
         encoding: Optional[str] = None,
         max_parts: Optional[int] = None,
@@ -554,7 +554,7 @@ class SMS(object):
     def send(
         self,
         timeout: Optional[float] = None,
-        fail_silently: Optional[bool] = False,
+        fail_silently: bool = False,
         service: Optional[SMSService] = None,
     ) -> Union[str, bool]:
         """Sends this SMS.
@@ -575,9 +575,9 @@ class SMS(object):
 
     def check_state(
         self,
-        wait: Optional[bool] = False,
+        wait: bool = False,
         timeout: Optional[float] = None,
-        fail_silently: Optional[bool] = False,
+        fail_silently: bool = False,
         service: Optional[SMSService] = None,
     ) -> Optional[str]:
         """Checks state of this SMS.
@@ -619,13 +619,13 @@ def send_sms(
     destination: str,
     text: str,
     orig: Optional[str] = None,
-    registered_delivery: Optional[bool] = True,
-    debug: Optional[bool] = False,
+    registered_delivery: bool = True,
+    debug: bool = False,
     project: Optional[str] = None,
     encoding: Optional[str] = None,
     max_parts: Optional[int] = None,
     timeout: Optional[float] = None,
-    fail_silently: Optional[bool] = False,
+    fail_silently: bool = False,
     service: Optional[SMSService] = None,
 ) -> Union[str, bool]:
     """Shortcut to send a SMS.
@@ -673,7 +673,7 @@ def send_sms(
 def check_sms_state(
     handle_id: str,
     timeout: Optional[float] = None,
-    fail_silently: Optional[bool] = False,
+    fail_silently: bool = False,
     service: Optional[SMSService] = None,
 ) -> Optional[str]:
     """Shortcut to check state of a SMS.
@@ -701,7 +701,7 @@ def check_sms_state(
 def wait_until_arrived(
     handle_id: str,
     timeout: Optional[float] = None,
-    fail_silently: Optional[bool] = False,
+    fail_silently: bool = False,
     service: Optional[SMSService] = None,
 ) -> Optional[str]:
     """Waits until SMS gets 'arrived' status.
