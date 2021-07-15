@@ -69,7 +69,7 @@ class SMSResponse(object):
                 self._data[key.strip()] = value.strip()
 
     def __repr__(self):
-        return '<{} [{}]>'.format(self.__class__.__name__, self.message or '')
+        return f'<{self.__class__.__name__} [{self.message or ""}]>'
 
     def __getitem__(self, item: Any):
         return self._data[item]
@@ -159,11 +159,8 @@ class SMSService(object):
         self.timeout = timeout
 
     def __repr__(self):
-        return '<{} {}{}>'.format(
-            self.__class__.__name__,
-            self.username,
-            ' @ {}'.format(self.project) if self.project else '',
-        )
+        project = f' @ {self.project}' if self.project else ''
+        return f'<{self.__class__.__name__} {self.username}{project}>'
 
     def configure(self, **kwargs):
         """Allows to change SMSService parameters set in constructor.
@@ -542,14 +539,10 @@ class SMS(object):
         self.state_response = None
 
     def __repr__(self):
-        handle_id = self.handle_id
-        state = self.state
-        return '<{} {}{}{}>'.format(
-            self.__class__.__name__,
-            self.destination,
-            ' [{}]'.format(handle_id) if handle_id else '',
-            ' {}'.format(state) if state else '',
-        )
+        handle_id = f' [{self.handle_id}]' if self.handle_id else ''
+        state = f' {self.state}' if self.state else ''
+        class_name = self.__class__.__name__
+        return f'<{class_name} {self.destination}{handle_id}{state}>'
 
     def send(
         self,
