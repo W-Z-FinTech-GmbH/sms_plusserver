@@ -1,12 +1,7 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import unicode_literals
-
 import unittest
 
 import mock
 import requests
-import six
 
 import sms_plusserver
 
@@ -44,9 +39,7 @@ class SMSResponseTestCase(unittest.TestCase):
             'REQUEST OK\nA = 42\nB\n\n C D = '
         )
         self.assertEqual(response.message, 'REQUEST OK')
-        self.assertEqual(
-            list(response.items()), [('A', '42'), ('C D', '')]
-        )
+        self.assertEqual(list(response.items()), [('A', '42'), ('C D', '')])
 
     def test_iter_empty(self):
         response = sms_plusserver.SMSResponse('Unauthorized')
@@ -137,15 +130,13 @@ class SMSServiceTestCase(unittest.TestCase):
     def test_default_service_attributes(self):
         self.assertEqual(
             sms_plusserver.default_service.put_url,
-            sms_plusserver.SMSService.SMS_PUT_URL
+            sms_plusserver.SMSService.SMS_PUT_URL,
         )
         self.assertEqual(
             sms_plusserver.default_service.sms_state_url,
-            sms_plusserver.SMSService.SMS_STATE_URL
+            sms_plusserver.SMSService.SMS_STATE_URL,
         )
-        self.assertEqual(
-            sms_plusserver.default_service.project, ''
-        )
+        self.assertEqual(sms_plusserver.default_service.project, '')
         self.assertIsNone(sms_plusserver.default_service.username)
         self.assertIsNone(sms_plusserver.default_service.password)
         self.assertIsNone(sms_plusserver.default_service.orig)
@@ -170,9 +161,7 @@ class SMSServiceTestCase(unittest.TestCase):
         self.assertEqual(
             service.password, sms_plusserver.default_service.password
         )
-        self.assertEqual(
-            service.orig, sms_plusserver.default_service.orig
-        )
+        self.assertEqual(service.orig, sms_plusserver.default_service.orig)
         self.assertEqual(
             service.encoding, sms_plusserver.default_service.encoding
         )
@@ -203,7 +192,7 @@ class SMSServiceTestCase(unittest.TestCase):
             orig=custom_orig,
             encoding=custom_encoding,
             max_parts=custom_max_parts,
-            timeout=custom_timeout
+            timeout=custom_timeout,
         )
 
         self.assertEqual(service.put_url, custom_put_url)
@@ -237,7 +226,7 @@ class SMSServiceTestCase(unittest.TestCase):
             orig=custom_orig,
             encoding=custom_encoding,
             max_parts=custom_max_parts,
-            timeout=custom_timeout
+            timeout=custom_timeout,
         )
 
         self.assertEqual(service.put_url, custom_put_url)
@@ -275,7 +264,7 @@ class SMSServiceTestCase(unittest.TestCase):
                 'registered_delivery': '1',
             },
             auth=('user', 'pass'),
-            timeout=None
+            timeout=None,
         )
         self.assertIsInstance(response, sms_plusserver.SMSResponse)
         self.assertEqual(response.message, 'REQUEST OK')
@@ -295,9 +284,15 @@ class SMSServiceTestCase(unittest.TestCase):
         )
 
         response = service.put_sms(
-            '+4911122233344', 'Hello!', orig='TEST', registered_delivery=False,
-            debug=True, project='PROJECT2', encoding='utf-8', max_parts=3,
-            timeout=30
+            '+4911122233344',
+            'Hello!',
+            orig='TEST',
+            registered_delivery=False,
+            debug=True,
+            project='PROJECT2',
+            encoding='utf-8',
+            max_parts=3,
+            timeout=30,
         )
 
         mock_post.assert_called_once_with(
@@ -313,7 +308,7 @@ class SMSServiceTestCase(unittest.TestCase):
                 'maxparts': '3',
             },
             auth=('user', 'pass'),
-            timeout=30
+            timeout=30,
         )
         self.assertIsInstance(response, sms_plusserver.SMSResponse)
         self.assertEqual(response.message, 'REQUEST OK')
@@ -352,9 +347,9 @@ class SMSServiceTestCase(unittest.TestCase):
                 'registered_delivery': '1',
             },
             auth=('user', 'pass'),
-            timeout=None
+            timeout=None,
         )
-        self.assertEqual(six.text_type(raised.exception), 'Something is wrong')
+        self.assertEqual(str(raised.exception), 'Something is wrong')
 
     @mock.patch(
         'sms_plusserver.requests.post', side_effect=requests.ConnectTimeout
@@ -377,7 +372,7 @@ class SMSServiceTestCase(unittest.TestCase):
                 'registered_delivery': '1',
             },
             auth=('user', 'pass'),
-            timeout=None
+            timeout=None,
         )
         self.assertIsInstance(
             raised.exception.original_exception, requests.ConnectTimeout
@@ -408,7 +403,7 @@ class SMSServiceTestCase(unittest.TestCase):
                 'registered_delivery': '1',
             },
             auth=('user', 'pass'),
-            timeout=None
+            timeout=None,
         )
         self.assertIsInstance(
             raised.exception.original_exception, requests.HTTPError
@@ -439,7 +434,7 @@ class SMSServiceTestCase(unittest.TestCase):
                 'registered_delivery': '1',
             },
             auth=('user', 'pass'),
-            timeout=None
+            timeout=None,
         )
         self.assertIsNone(response)
 
@@ -458,11 +453,9 @@ class SMSServiceTestCase(unittest.TestCase):
 
         mock_post.assert_called_once_with(
             sms_plusserver.SMSService.SMS_STATE_URL,
-            {
-                'handle': 'd41d8cd98f00b204e9800998ecf8427e',
-            },
+            {'handle': 'd41d8cd98f00b204e9800998ecf8427e'},
             auth=('user', 'pass'),
-            timeout=None
+            timeout=None,
         )
         self.assertIsInstance(response, sms_plusserver.SMSResponse)
         self.assertEqual(response.message, 'REQUEST OK')
@@ -483,11 +476,9 @@ class SMSServiceTestCase(unittest.TestCase):
 
         mock_post.assert_called_once_with(
             sms_plusserver.SMSService.SMS_STATE_URL,
-            {
-                'handle': 'd41d8cd98f00b204e9800998ecf8427e',
-            },
+            {'handle': 'd41d8cd98f00b204e9800998ecf8427e'},
             auth=('user', 'pass'),
-            timeout=30
+            timeout=30,
         )
         self.assertIsInstance(response, sms_plusserver.SMSResponse)
         self.assertEqual(response.message, 'REQUEST OK')
@@ -525,13 +516,11 @@ class SMSServiceTestCase(unittest.TestCase):
 
         mock_post.assert_called_once_with(
             sms_plusserver.SMSService.SMS_STATE_URL,
-            {
-                'handle': 'unknownhandle',
-            },
+            {'handle': 'unknownhandle'},
             auth=('user', 'pass'),
-            timeout=None
+            timeout=None,
         )
-        self.assertEqual(six.text_type(raised.exception), 'Something is wrong')
+        self.assertEqual(str(raised.exception), 'Something is wrong')
 
     @mock.patch(
         'sms_plusserver.requests.post', side_effect=requests.ConnectTimeout
@@ -546,11 +535,9 @@ class SMSServiceTestCase(unittest.TestCase):
 
         mock_post.assert_called_once_with(
             sms_plusserver.SMSService.SMS_STATE_URL,
-            {
-                'handle': 'd41d8cd98f00b204e9800998ecf8427e',
-            },
+            {'handle': 'd41d8cd98f00b204e9800998ecf8427e'},
             auth=('user', 'pass'),
-            timeout=None
+            timeout=None,
         )
         self.assertIsInstance(
             raised.exception.original_exception, requests.ConnectTimeout
@@ -573,11 +560,9 @@ class SMSServiceTestCase(unittest.TestCase):
 
         mock_post.assert_called_once_with(
             sms_plusserver.SMSService.SMS_STATE_URL,
-            {
-                'handle': 'd41d8cd98f00b204e9800998ecf8427e',
-            },
+            {'handle': 'd41d8cd98f00b204e9800998ecf8427e'},
             auth=('user', 'pass'),
-            timeout=None
+            timeout=None,
         )
         self.assertIsInstance(
             raised.exception.original_exception, requests.HTTPError
@@ -600,11 +585,9 @@ class SMSServiceTestCase(unittest.TestCase):
 
         mock_post.assert_called_once_with(
             sms_plusserver.SMSService.SMS_STATE_URL,
-            {
-                'handle': 'd41d8cd98f00b204e9800998ecf8427e',
-            },
+            {'handle': 'd41d8cd98f00b204e9800998ecf8427e'},
             auth=('user', 'pass'),
-            timeout=None
+            timeout=None,
         )
         self.assertIsNone(response)
 
@@ -614,7 +597,7 @@ class SMSServiceTestCase(unittest.TestCase):
         'sms_plusserver.SMSService.put_sms',
         return_value=sms_plusserver.SMSResponse(
             'REQUEST OK\nhandle = d41d8cd98f00b204e9800998ecf8427e'
-        )
+        ),
     )
     def test_send_ok_default_params(self, mock_put_sms):
         service = sms_plusserver.SMSService()
@@ -632,20 +615,26 @@ class SMSServiceTestCase(unittest.TestCase):
             encoding=None,
             max_parts=None,
             timeout=None,
-            fail_silently=False
+            fail_silently=False,
         )
         self.assertEqual(handle_id, 'd41d8cd98f00b204e9800998ecf8427e')
         self.assertIsInstance(sms.put_response, sms_plusserver.SMSResponse)
 
     @mock.patch(
         'sms_plusserver.SMSService.put_sms',
-        return_value=sms_plusserver.SMSResponse('REQUEST OK\n')
+        return_value=sms_plusserver.SMSResponse('REQUEST OK\n'),
     )
     def test_send_ok_custom_params(self, mock_put_sms):
         service = sms_plusserver.SMSService()
         sms = sms_plusserver.SMS(
-            '+4911122233344', 'Hello!', orig='TEST', registered_delivery=False,
-            debug=True, project='PROJECT2', encoding='utf-8', max_parts=3
+            '+4911122233344',
+            'Hello!',
+            orig='TEST',
+            registered_delivery=False,
+            debug=True,
+            project='PROJECT2',
+            encoding='utf-8',
+            max_parts=3,
         )
 
         success = service.send(sms, timeout=30, fail_silently=True)
@@ -660,14 +649,14 @@ class SMSServiceTestCase(unittest.TestCase):
             encoding='utf-8',
             max_parts=3,
             timeout=30,
-            fail_silently=True
+            fail_silently=True,
         )
         self.assertTrue(success)
         self.assertIsInstance(sms.put_response, sms_plusserver.SMSResponse)
 
     @mock.patch(
         'sms_plusserver.SMSService.put_sms',
-        side_effect=sms_plusserver.RequestError('Error occurred')
+        side_effect=sms_plusserver.RequestError('Error occurred'),
     )
     def test_send_service_error(self, mock_put_sms):
         service = sms_plusserver.SMSService()
@@ -686,7 +675,7 @@ class SMSServiceTestCase(unittest.TestCase):
             encoding=None,
             max_parts=None,
             timeout=None,
-            fail_silently=False
+            fail_silently=False,
         )
         self.assertIsNone(sms.put_response)
 
@@ -694,7 +683,7 @@ class SMSServiceTestCase(unittest.TestCase):
 
     @mock.patch(
         'sms_plusserver.SMSService.check_sms_state',
-        return_value=sms_plusserver.SMSResponse('REQUEST OK\nstate = arrived')
+        return_value=sms_plusserver.SMSResponse('REQUEST OK\nstate = arrived'),
     )
     def test_check_state_ok_default_params(self, mock_check_sms_state):
         service = sms_plusserver.SMSService()
@@ -708,14 +697,14 @@ class SMSServiceTestCase(unittest.TestCase):
         mock_check_sms_state.assert_called_once_with(
             handle_id='d41d8cd98f00b204e9800998ecf8427e',
             timeout=None,
-            fail_silently=False
+            fail_silently=False,
         )
         self.assertEqual(state, 'arrived')
         self.assertIsInstance(sms.state_response, sms_plusserver.SMSResponse)
 
     @mock.patch(
         'sms_plusserver.SMSService.check_sms_state',
-        return_value=sms_plusserver.SMSResponse('REQUEST OK\nstate = arrived')
+        return_value=sms_plusserver.SMSResponse('REQUEST OK\nstate = arrived'),
     )
     def test_check_state_ok_custom_params(self, mock_check_sms_state):
         service = sms_plusserver.SMSService()
@@ -729,14 +718,14 @@ class SMSServiceTestCase(unittest.TestCase):
         mock_check_sms_state.assert_called_once_with(
             handle_id='d41d8cd98f00b204e9800998ecf8427e',
             timeout=30,
-            fail_silently=True
+            fail_silently=True,
         )
         self.assertEqual(state, 'arrived')
         self.assertIsInstance(sms.state_response, sms_plusserver.SMSResponse)
 
     @mock.patch(
         'sms_plusserver.SMSService.check_sms_state',
-        side_effect=sms_plusserver.RequestError('Error occurred')
+        side_effect=sms_plusserver.RequestError('Error occurred'),
     )
     def test_check_state_service_error(self, mock_check_sms_state):
         service = sms_plusserver.SMSService()
@@ -751,7 +740,7 @@ class SMSServiceTestCase(unittest.TestCase):
         mock_check_sms_state.assert_called_once_with(
             handle_id='d41d8cd98f00b204e9800998ecf8427e',
             timeout=None,
-            fail_silently=False
+            fail_silently=False,
         )
         self.assertIsNone(sms.state_response)
 
@@ -785,10 +774,14 @@ class SMSTestCase(unittest.TestCase):
         custom_max_parts = 3
 
         sms = sms_plusserver.SMS(
-            destination, text,
-            orig=custom_orig, registered_delivery=custom_registered_delivery,
-            debug=custom_debug, project=custom_project,
-            encoding=custom_encoding, max_parts=custom_max_parts
+            destination,
+            text,
+            orig=custom_orig,
+            registered_delivery=custom_registered_delivery,
+            debug=custom_debug,
+            project=custom_project,
+            encoding=custom_encoding,
+            max_parts=custom_max_parts,
         )
 
         self.assertEqual(sms.destination, destination)
@@ -803,21 +796,18 @@ class SMSTestCase(unittest.TestCase):
     def test_repr(self):
         sms = sms_plusserver.SMS('+4911122233344', 'Hello!')
         self.assertEqual(repr(sms), '<SMS +4911122233344>')
+        handle_id = 'd41d8cd98f00b204e9800998ecf8427e'
 
         sms.put_response = sms_plusserver.SMSResponse(
-            'REQUEST OK\nhandle = d41d8cd98f00b204e9800998ecf8427e'
+            f'REQUEST OK\nhandle = {handle_id}'
         )
-        self.assertEqual(
-            repr(sms),
-            '<SMS +4911122233344 [d41d8cd98f00b204e9800998ecf8427e]>'
-        )
+        self.assertEqual(repr(sms), f'<SMS +4911122233344 [{handle_id}]>')
 
         sms.state_response = sms_plusserver.SMSResponse(
             'REQUEST OK\nstate = processed'
         )
         self.assertEqual(
-            repr(sms),
-            '<SMS +4911122233344 [d41d8cd98f00b204e9800998ecf8427e] processed>'
+            repr(sms), f'<SMS +4911122233344 [{handle_id}] processed>'
         )
 
     # Tests for `send` method:
@@ -908,7 +898,7 @@ class SMSTestCase(unittest.TestCase):
         sms.put_response = sms_plusserver.SMSResponse(
             'REQUEST OK\nhandle = d41d8cd98f00b204e9800998ecf8427e'
         )
-        self.assertIsNone(sms.state)  # No "state" found in put response
+        self.assertIsNone(sms.state)  # No 'state' found in put response
 
     def test_state_with_put_and_state_response(self):
         sms = sms_plusserver.SMS('+4911122233344', 'Hello!')
@@ -932,7 +922,7 @@ class FunctionsTestCase(unittest.TestCase):
         'sms_plusserver.SMSService.put_sms',
         return_value=sms_plusserver.SMSResponse(
             'REQUEST OK\nhandle = d41d8cd98f00b204e9800998ecf8427e'
-        )
+        ),
     )
     def test_send_sms_default_params(self, mock_put_sms):
         handle_id = sms_plusserver.send_sms('+4911122233344', 'Hello!')
@@ -947,19 +937,26 @@ class FunctionsTestCase(unittest.TestCase):
             encoding=None,
             max_parts=None,
             timeout=None,
-            fail_silently=False
+            fail_silently=False,
         )
         self.assertEqual(handle_id, 'd41d8cd98f00b204e9800998ecf8427e')
 
     @mock.patch(
         'sms_plusserver.SMSService.put_sms',
-        return_value=sms_plusserver.SMSResponse('REQUEST OK\n')
+        return_value=sms_plusserver.SMSResponse('REQUEST OK\n'),
     )
     def test_send_sms_custom_params(self, mock_put_sms):
         success = sms_plusserver.send_sms(
-            '+4911122233344', 'Hello!', orig='TEST', registered_delivery=False,
-            debug=True, project='PROJECT2', encoding='utf-8', max_parts=3,
-            timeout=30, fail_silently=True
+            '+4911122233344',
+            'Hello!',
+            orig='TEST',
+            registered_delivery=False,
+            debug=True,
+            project='PROJECT2',
+            encoding='utf-8',
+            max_parts=3,
+            timeout=30,
+            fail_silently=True,
         )
 
         mock_put_sms.assert_called_once_with(
@@ -972,7 +969,7 @@ class FunctionsTestCase(unittest.TestCase):
             encoding='utf-8',
             max_parts=3,
             timeout=30,
-            fail_silently=True
+            fail_silently=True,
         )
         self.assertTrue(success)
 
@@ -987,7 +984,7 @@ class FunctionsTestCase(unittest.TestCase):
 
     @mock.patch(
         'sms_plusserver.SMSService.check_sms_state',
-        return_value=sms_plusserver.SMSResponse('REQUEST OK\nstate = arrived')
+        return_value=sms_plusserver.SMSResponse('REQUEST OK\nstate = arrived'),
     )
     def test_check_sms_state_default_params(self, mock_check_sms_state):
         state = sms_plusserver.check_sms_state(
@@ -997,13 +994,13 @@ class FunctionsTestCase(unittest.TestCase):
         mock_check_sms_state.assert_called_once_with(
             'd41d8cd98f00b204e9800998ecf8427e',
             timeout=None,
-            fail_silently=False
+            fail_silently=False,
         )
         self.assertEqual(state, 'arrived')
 
     @mock.patch(
         'sms_plusserver.SMSService.check_sms_state',
-        return_value=sms_plusserver.SMSResponse('REQUEST OK\nstate = arrived')
+        return_value=sms_plusserver.SMSResponse('REQUEST OK\nstate = arrived'),
     )
     def test_check_sms_state_custom_params(self, mock_check_sms_state):
         state = sms_plusserver.check_sms_state(
@@ -1011,9 +1008,7 @@ class FunctionsTestCase(unittest.TestCase):
         )
 
         mock_check_sms_state.assert_called_once_with(
-            'd41d8cd98f00b204e9800998ecf8427e',
-            timeout=30,
-            fail_silently=True
+            'd41d8cd98f00b204e9800998ecf8427e', timeout=30, fail_silently=True
         )
         self.assertEqual(state, 'arrived')
 
@@ -1028,7 +1023,7 @@ class FunctionsTestCase(unittest.TestCase):
 
     @mock.patch(
         'sms_plusserver.SMSService.check_sms_state',
-        return_value=sms_plusserver.SMSResponse('REQUEST OK\nstate = arrived')
+        return_value=sms_plusserver.SMSResponse('REQUEST OK\nstate = arrived'),
     )
     def test_wait_until_arrived_default_params(self, mock_check_sms_state):
         state = sms_plusserver.wait_until_arrived(
@@ -1038,13 +1033,13 @@ class FunctionsTestCase(unittest.TestCase):
         mock_check_sms_state.assert_called_once_with(
             'd41d8cd98f00b204e9800998ecf8427e',
             timeout=None,
-            fail_silently=False
+            fail_silently=False,
         )
         self.assertEqual(state, 'arrived')
 
     @mock.patch(
         'sms_plusserver.SMSService.check_sms_state',
-        return_value=sms_plusserver.SMSResponse('REQUEST OK\nstate = arrived')
+        return_value=sms_plusserver.SMSResponse('REQUEST OK\nstate = arrived'),
     )
     def test_wait_until_arrived_custom_params(self, mock_check_sms_state):
         state = sms_plusserver.wait_until_arrived(
@@ -1054,7 +1049,7 @@ class FunctionsTestCase(unittest.TestCase):
         mock_check_sms_state.assert_called_once_with(
             'd41d8cd98f00b204e9800998ecf8427e',
             timeout=30,
-            fail_silently=False  # this param is not propagated
+            fail_silently=False,  # this param is not propagated
         )
         self.assertEqual(state, 'arrived')
 

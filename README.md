@@ -231,5 +231,4 @@ by using `put_response` and `state_response` attributes of `SMS` objects.
 Requirements
 ------------
 
-* Python 2.7+
-* Python 3.5+
+* Python 3.6+
