@@ -12,7 +12,7 @@ with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme_file:
 
 setup(
     name='sms_plusserver',
-    version='1.0.0',
+    version='1.1.0',
     description=(
         'Python library that allows to send messages using Plusserver SMS '
         'platform.'
